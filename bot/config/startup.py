@@ -1,10 +1,10 @@
-import logging
-
 from aiogram import Bot, Dispatcher
+from aiogram.utils.callback_answer import CallbackAnswerMiddleware
 
-from config.logging import init_logging
-from config.milldewares import register_middlewares
-from config.ui_commands import set_ui_commands
+from bot.config.logging import init_logging
+from bot.config.middlewares.current_message import ActiveMessageMiddleware
+from bot.config.middlewares import register_middlewares
+from bot.config.ui_commands import set_ui_commands
 
 
 async def on_startup(dispatcher: Dispatcher,
@@ -13,6 +13,8 @@ async def on_startup(dispatcher: Dispatcher,
     await set_ui_commands(bot)
     register_middlewares(
         dispatcher=dispatcher,
-        middlewares=[]
+        middlewares=[
+            ActiveMessageMiddleware(),
+            CallbackAnswerMiddleware()
+        ]
     )
-    logging.info("123")

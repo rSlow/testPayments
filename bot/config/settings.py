@@ -1,10 +1,10 @@
 from pathlib import Path
 
-from .env import get_env
+from environs import Env
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-ENV = get_env()
+ENV = Env()
 
 DEBUG: bool = ENV.bool("AIOGRAM_DEBUG", False)
 
@@ -12,3 +12,6 @@ REDIS_URL: str = ENV.str("REDIS_URL")
 
 LOGS_FOLDER = ENV.str("LOGS_DIR", "logs")
 LOGS_DIR = BASE_DIR / LOGS_FOLDER
+
+GROUP_SUBSCRIBE_ID = ENV.str("GROUP_SUBSCRIBE_ID")
+CHANNEL_SUBSCRIBE_ID = ENV.str("CHANNEL_SUBSCRIBE_ID")
