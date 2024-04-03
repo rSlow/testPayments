@@ -1,0 +1,6 @@
+async def is_subscribed_to_group():
+    ...
+
+
+async def is_subscribed_to_channel():
+    ...

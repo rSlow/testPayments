@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres
+    restart: always
+    env_file:
+      - ./.env
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - pgdata_payments:/var/lib/postgresql/data/pgdata/payments
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata/payments
+
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - "${REDIS_PORT}:6379"
+    command:
+      - "redis-server"
+      - "--loglevel ${REDIS_LOGLEVEL:-warning}"
+      - "--databases 2"
+      - "--save 900 1"
+      - "--save 300 10"
+      - "--save 60 10000"
+      - "--maxmemory ${REDIS_MAXMEM:-50mb}"
+      - "--maxmemory-policy ${REDIS_POLICY:-noeviction}"
+      - "--requirepass ${REDIS_PASSWORD}"
+    volumes:
+      - redis_payments:/data
+    env_file:
+      - ./.env
+
+volumes:
+  pgdata_payments:
+  redis_payments:
