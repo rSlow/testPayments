@@ -38,8 +38,8 @@ class SubCategory(models.Model):
         return self.name
 
 
-def get_photo_path(product: "Product"):
-    return (Path("product") / product.subcategory.category.name / product.subcategory.name).as_posix()
+def get_photo_path(product: "Product", filename: str):
+    return (Path("products") / product.subcategory.category.name / product.subcategory.name / filename).as_posix()
 
 
 class Product(models.Model):

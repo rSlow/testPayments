@@ -1,11 +1,12 @@
-from aiogram import Router
+from aiogram_dialog import Dialog
 
-from .category import category_router
-from .subcategory import subcategory_router
+from .add_product import set_count_window, confirmation_window
+from .select_product import category_window, subcategory_window, product_window
 
-products_router = Router(name="products")
-
-products_router.include_routers(
-    category_router,
-    subcategory_router,
+products_dialog = Dialog(
+    category_window,
+    subcategory_window,
+    product_window,
+    set_count_window,
+    confirmation_window,
 )
