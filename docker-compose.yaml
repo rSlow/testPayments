@@ -33,6 +33,7 @@ services:
     env_file:
       - ./.env
 
+
 volumes:
   pgdata_payments:
   redis_payments:

@@ -5,20 +5,18 @@ from aiogram_dialog import Window, DialogManager
 from aiogram_dialog.widgets.kbd import ScrollingGroup, Select, Column, Button, Next
 from aiogram_dialog.widgets.media import StaticMedia, MediaScroll
 from aiogram_dialog.widgets.text import Const, Format, Multi
+from aiohttp import ClientSession
 
-from bot.apps.products.states import ProductFSM
-from api.apps.products.models import Category, SubCategory, Product
-from bot.common.keyboards.buttons import BACK_BUTTON, CANCEL_BUTTON
-from bot.common.keyboards.scroll import PagerScroll
-from bot.common.types import MediaScrollFormat
+from ..states import ProductFSM
+from common.keyboards.buttons import BACK_BUTTON, CANCEL_BUTTON
+from common.keyboards.scroll import PagerScroll
+from common.types import MediaScrollFormat
+from ..base_api import BackendAPI
 
 
-async def category_getter(**__):
-    categories: list[tuple[str, int]] = [
-        (category.name, category.pk)
-        async for category in Category.objects.all()
-    ]
-    return {'categories': categories}
+async def category_getter(session: ClientSession, **__):
+    categories = await BackendAPI.get_categories(session)
+    return {'categories': [(category.name, category.pk) for category in categories]}
 
 
 async def on_category_click(_: types.CallbackQuery,
@@ -50,15 +48,15 @@ category_window = Window(
 )
 
 
-async def subcategory_getter(dialog_manager: DialogManager, **__):
+async def subcategory_getter(dialog_manager: DialogManager,
+                             session: ClientSession,
+                             **__):
     category_id = dialog_manager.dialog_data.get("category_id")
-    subcategories: list[tuple[str, int]] = [
-        (subcategory.name, subcategory.pk)
-        async for subcategory in SubCategory.objects.filter(category_id=category_id)
-    ]
-    return {
-        'subcategories': subcategories
-    }
+    subcategories = await BackendAPI.get_subcategories(
+        session=session,
+        category_id=category_id
+    )
+    return {'subcategories': [(subcategory.name, subcategory.pk) for subcategory in subcategories]}
 
 
 async def on_subcategory_click(_: types.CallbackQuery,
@@ -90,23 +88,25 @@ subcategory_window = Window(
 )
 
 
-async def product_getter(dialog_manager: DialogManager, **__):
+async def product_getter(dialog_manager: DialogManager,
+                         session: ClientSession,
+                         **__):
     current_page: int = await dialog_manager.find(MEDIA_SCROLL).get_page()
     dialog_data = dialog_manager.dialog_data
     category_id = dialog_data.get("category_id")
     subcategory_id = dialog_data.get("subcategory_id")
 
-    products: list[Product] = [
-        product async for product in Product.objects.filter(
-            subcategory_id=subcategory_id,
-            subcategory__category_id=category_id
-        )
-    ]
+    products = await BackendAPI.get_products(
+        session=session,
+        category_id=category_id,
+        subcategory_id=subcategory_id
+    )
     data = {'products': products}
     if products:
-        product: Product = products[current_page]
+        product = products[current_page]
+        print(product.photo)
         data.update({"product": product})
-        dialog_data.update({"product_id": product.id})
+        dialog_data.update({"product_id": product.pk})
     return data
 
 
@@ -127,7 +127,7 @@ product_window = Window(
         when="product"
     ),
     MediaScroll(
-        media=StaticMedia(path=MediaScrollFormat("{product.photo.path}")),
+        media=StaticMedia(url=MediaScrollFormat("{product.photo}")),
         items="products",
         id=MEDIA_SCROLL,
         when="product",
@@ -140,6 +140,7 @@ product_window = Window(
         Next(
             text=Format("Добавить в корзину 🧺"),
             id="add_on_cart",
+            when="product"
         ),
         BACK_BUTTON
     ),

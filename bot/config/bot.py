@@ -1,9 +1,9 @@
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import SimpleEventIsolation
 
-from bot.apps.router import apps_router
-from bot.common.handlers.error import error_router
-from bot.common.handlers.start import start_router, start_dialog
+from apps.router import apps_router
+from common.handlers.error import error_router
+from common.handlers.start import start_router, start_dialog
 from .settings import ENV
 from .storage import redis_storage
 

@@ -1,8 +1,9 @@
-from aiogram import Dispatcher, BaseMiddleware
+from aiogram import BaseMiddleware, Router
 
 
-def register_middlewares(dispatcher: Dispatcher,
+def register_middlewares(router: Router,
                          middlewares: list[BaseMiddleware]):
     for middleware in middlewares:
-        dispatcher.update.middleware.register(middleware)
-        dispatcher.error.middleware.register(middleware)
+        router.message.middleware.register(middleware)
+        router.callback_query.middleware.register(middleware)
+        router.error.middleware.register(middleware)

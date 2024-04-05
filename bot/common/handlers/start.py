@@ -5,11 +5,11 @@ from aiogram_dialog import DialogManager, StartMode, Window, Dialog
 from aiogram_dialog.widgets.kbd import Column, Button, Start, Url
 from aiogram_dialog.widgets.text import Const
 
-from bot.config import settings
+from config import settings
 from ..FSM.single_factory import StartFSM
 
 from ..services.subscription import is_subscribed_to
-from bot.apps.products.states import ProductFSM
+from apps.products.states import ProductFSM
 
 start_router = Router(name="start")
 

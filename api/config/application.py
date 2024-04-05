@@ -5,9 +5,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "api.apps.user.apps.UserConfig",
-    "api.apps.cart.apps.CartConfig",
-    "api.apps.products.apps.ProductsConfig"
+    # third-party
+    "rest_framework",
+    # local
+    "apps.user.apps.UserConfig",
+    "apps.cart.apps.CartConfig",
+    "apps.products.apps.ProductsConfig"
 ]
 
 MIDDLEWARE = [

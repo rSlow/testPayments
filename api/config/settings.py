@@ -9,5 +9,6 @@ include(
     "database.py",
     "auth.py",
     "static.py",
-    "logger.py"
+    "logger.py",
+    "rest.py",
 )
